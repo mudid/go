@@ -1,1 +1,1 @@
-# go
+# golang learning and practice
