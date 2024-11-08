@@ -72,6 +72,31 @@ document.addEventListener('DOMContentLoaded', function() {
       const div = document.createElement('div');
       div.className = 'result-item';
       
+      // 创建删除按钮
+      const deleteBtn = document.createElement('span');
+      deleteBtn.className = 'delete-btn';
+      deleteBtn.textContent = '×';
+      deleteBtn.onclick = async () => {
+        try {
+          const response = await fetch(`http://localhost:3000/api/notes/${note.id}`, {
+            method: 'DELETE'
+          });
+          
+          if (response.ok) {
+            // 从当前列表中移除该笔记
+            allNotes = allNotes.filter(n => n.id !== note.id);
+            // 重新显示当前页
+            displayCurrentPage();
+            renderPagination();
+            showMessage('笔记已删除！');
+          } else {
+            showMessage('删除失败，请重试！');
+          }
+        } catch (error) {
+          showMessage('删除失败：' + error.message);
+        }
+      };
+      
       // 修改日期处理逻辑保持不变
       let formattedDate = note.created_at || note.createdAt || '时间未知';
       try {
@@ -91,6 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       
       div.innerHTML = `<span class="timestamp">[${formattedDate}]</span> ${note.content}`;
+      div.appendChild(deleteBtn);
       results.appendChild(div);
     });
   }

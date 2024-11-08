@@ -42,6 +42,20 @@ app.get('/api/notes/search', async (req, res) => {
   }
 });
 
+// 添加删除笔记的API
+app.delete('/api/notes/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await pool.execute(
+      'DELETE FROM notes WHERE id = ?',
+      [id]
+    );
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.listen(3000, () => {
   console.log('Server running on port 3000');
 }); 
