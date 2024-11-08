@@ -85,15 +85,32 @@ document.addEventListener('DOMContentLoaded', function() {
           if (response.ok) {
             // 从当前列表中移除该笔记
             allNotes = allNotes.filter(n => n.id !== note.id);
+            // 如果当前页已经没有数据了，且不是第一页，则跳转到上一页
+            const totalPages = Math.ceil(allNotes.length / pageSize);
+            if (currentPage > totalPages && currentPage > 1) {
+              currentPage--;
+            }
             // 重新显示当前页
             displayCurrentPage();
             renderPagination();
-            showMessage('笔记已删除！');
+            // 不再显示删除成功的消息，保持搜索结果的显示
           } else {
-            showMessage('删除失败，请重试！');
+            // 删除失败时只显示错误消息，不影响当前显示的搜索结果
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = '删除失败，请重试！';
+            results.insertBefore(errorDiv, results.firstChild);
+            // 3秒后自动移除错误消息
+            setTimeout(() => errorDiv.remove(), 3000);
           }
         } catch (error) {
-          showMessage('删除失败：' + error.message);
+          // 发生错误时只显示错误消息，不影响当前显示的搜索结果
+          const errorDiv = document.createElement('div');
+          errorDiv.className = 'error-message';
+          errorDiv.textContent = '删除失败：' + error.message;
+          results.insertBefore(errorDiv, results.firstChild);
+          // 3秒后自动移除错误消息
+          setTimeout(() => errorDiv.remove(), 3000);
         }
       };
       
