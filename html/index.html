@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>西班牙语文本匹配分析</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            vertical-align: top;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            resize: vertical;
+        }
+        .match {
+            background-color: #90EE90;
+        }
+        .no-match {
+            background-color: #FFB6C1;
+        }
+    </style>
+</head>
+<body>
+    <table>
+        <tr>
+            <td><textarea id="text1" placeholder="输入西班牙语文本"></textarea></td>
+            <td><textarea id="text2" placeholder="其他文本"></textarea></td>
+            <td><textarea id="text3" placeholder="用于匹配的文本"></textarea></td>
+            <td id="percentage">0%</td>
+        </tr>
+    </table>
+
+    <script>
+        function normalizeText(text) {
+            return text.toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')  // 移除重音符号
+                .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '')  // 移除标点符号
+                .trim();
+        }
+
+        function highlightMatches(text1, text3) {
+            const words1 = normalizeText(text1).split(/\s+/);
+            const words3 = normalizeText(text3).split(/\s+/);
+            
+            // 创建带高亮的HTML
+            let html1 = text1.split(/\s+/).map(word => {
+                const normalizedWord = normalizeText(word);
+                return words3.includes(normalizedWord) 
+                    ? `<span class="match">${word}</span>` 
+                    : `<span class="no-match">${word}</span>`;
+            }).join(' ');
+
+            let html3 = text3.split(/\s+/).map(word => {
+                const normalizedWord = normalizeText(word);
+                return words1.includes(normalizedWord)
+                    ? `<span class="match">${word}</span>`
+                    : `<span class="no-match">${word}</span>`;
+            }).join(' ');
+
+            // 计算匹配百分比
+            const matchedWords = words1.filter(word => words3.includes(word));
+            const percentage = (matchedWords.length / words1.length * 100) || 0;
+
+            return {
+                text1Html: html1,
+                text3Html: html3,
+                percentage: percentage.toFixed(1)
+            };
+        }
+
+        function updateDisplay() {
+            const text1 = document.getElementById('text1').value;
+            const text3 = document.getElementById('text3').value;
+
+            if (text1 && text3) {
+                const result = highlightMatches(text1, text3);
+                
+                // 创建临时div来显示高亮文本
+                const div1 = document.createElement('div');
+                div1.innerHTML = result.text1Html;
+                div1.style.minHeight = '100px';
+                
+                const div3 = document.createElement('div');
+                div3.innerHTML = result.text3Html;
+                div3.style.minHeight = '100px';
+
+                // 替换textarea为高亮文本
+                const td1 = document.getElementById('text1').parentNode;
+                const td3 = document.getElementById('text3').parentNode;
+                
+                td1.innerHTML = '';
+                td1.appendChild(div1);
+                
+                td3.innerHTML = '';
+                td3.appendChild(div3);
+
+                // 更新百分比
+                document.getElementById('percentage').textContent = `${result.percentage}%`;
+
+                // 延迟1秒后恢复textarea
+                setTimeout(() => {
+                    // 恢复第一列的textarea
+                    const textarea1 = document.createElement('textarea');
+                    textarea1.id = 'text1';
+                    textarea1.placeholder = '输入西班牙语文本';
+                    textarea1.value = text1;
+                    textarea1.addEventListener('input', updateDisplay);
+                    td1.innerHTML = '';
+                    td1.appendChild(textarea1);
+
+                    // 恢复第三列的textarea
+                    const textarea3 = document.createElement('textarea');
+                    textarea3.id = 'text3';
+                    textarea3.placeholder = '用于匹配的文本';
+                    textarea3.value = text3;
+                    textarea3.addEventListener('input', updateDisplay);
+                    td3.innerHTML = '';
+                    td3.appendChild(textarea3);
+                }, 1000);
+            }
+        }
+
+        // 修改事件监听部分
+        document.getElementById('text1').addEventListener('input', updateDisplay);
+        document.getElementById('text3').addEventListener('input', updateDisplay);
+    </script>
+</body>
+</html> 
