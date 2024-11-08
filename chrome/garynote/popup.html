@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      width: 300px;
+      padding: 10px;
+    }
+    #searchContainer {
+      display: flex;
+      gap: 5px;
+    }
+    #noteInput {
+      flex-grow: 1;
+    }
+    #results {
+      margin-top: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .result-item {
+      padding: 5px;
+      border-bottom: 1px solid #eee;
+    }
+  </style>
+</head>
+<body>
+  <div id="searchContainer">
+    <input type="text" id="noteInput" placeholder="输入笔记或搜索关键词">
+    <button id="searchBtn">搜索</button>
+  </div>
+  <div id="results"></div>
+  <script src="popup.js"></script>
+</body>
+</html> 
