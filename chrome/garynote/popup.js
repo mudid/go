@@ -48,7 +48,26 @@ document.addEventListener('DOMContentLoaded', function() {
         notes.forEach(note => {
           const div = document.createElement('div');
           div.className = 'result-item';
-          div.textContent = note.content;
+          
+          // 修改日期处理逻辑
+          let formattedDate = note.created_at || note.createdAt || '时间未知';
+          try {
+            const timestamp = new Date(formattedDate);
+            if (!isNaN(timestamp)) {
+              formattedDate = timestamp.toLocaleDateString('zh-CN', {
+                month: 'numeric',
+                day: 'numeric'
+              }) + ' ' + timestamp.toLocaleTimeString('zh-CN', {
+                hour: '2-digit',
+                minute: '2-digit'
+              });
+            }
+          } catch (error) {
+            console.error('日期格式化错误:', error);
+            formattedDate = '时间未知';
+          }
+          
+          div.innerHTML = `<span class="timestamp">[${formattedDate}]</span> ${note.content}`;
           results.appendChild(div);
         });
       }
