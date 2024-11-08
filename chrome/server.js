@@ -56,6 +56,18 @@ app.delete('/api/notes/:id', async (req, res) => {
   }
 });
 
+// 添加获取最新记录的API
+app.get('/api/notes/latest', async (req, res) => {
+  try {
+    const [rows] = await pool.execute(
+      'SELECT * FROM notes ORDER BY created_at DESC LIMIT 1'
+    );
+    res.json(rows[0] || null);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.listen(3000, () => {
   console.log('Server running on port 3000');
 }); 

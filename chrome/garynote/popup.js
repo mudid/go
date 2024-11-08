@@ -205,4 +205,62 @@ document.addEventListener('DOMContentLoaded', function() {
   function showMessage(msg) {
     results.innerHTML = `<div class="result-item">${msg}</div>`;
   }
+
+  // 添加获取最新记录的函数
+  async function fetchLatestNote() {
+    try {
+      const response = await fetch('http://localhost:3000/api/notes/latest');
+      const note = await response.json();
+      
+      if (note) {
+        results.innerHTML = '';
+        const div = document.createElement('div');
+        div.className = 'result-item';
+        
+        const deleteBtn = document.createElement('span');
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.textContent = '×';
+        deleteBtn.onclick = async () => {
+          // 复用现有的删除逻辑
+          try {
+            const response = await fetch(`http://localhost:3000/api/notes/${note.id}`, {
+              method: 'DELETE'
+            });
+            
+            if (response.ok) {
+              results.innerHTML = '';
+            }
+          } catch (error) {
+            showMessage('删除失败：' + error.message);
+          }
+        };
+        
+        let formattedDate = note.created_at || note.createdAt || '时间未知';
+        try {
+          const timestamp = new Date(formattedDate);
+          if (!isNaN(timestamp)) {
+            formattedDate = timestamp.toLocaleDateString('zh-CN', {
+              month: 'numeric',
+              day: 'numeric'
+            }) + ' ' + timestamp.toLocaleTimeString('zh-CN', {
+              hour: '2-digit',
+              minute: '2-digit'
+            });
+          }
+        } catch (error) {
+          console.error('日期格式化错误:', error);
+          formattedDate = '时间未知';
+        }
+        
+        div.innerHTML = `<span class="timestamp">[${formattedDate}]</span> ${note.content}`;
+        div.appendChild(deleteBtn);
+        results.appendChild(div);
+      }
+    } catch (error) {
+      console.error('获取最新记录失败：', error);
+    }
+  }
+
+  // 添加输入框焦点事件
+  noteInput.addEventListener('focus', fetchLatestNote);
 }); 
