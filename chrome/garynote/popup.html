@@ -6,13 +6,43 @@
     body {
       width: 300px;
       padding: 10px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
     #searchContainer {
       display: flex;
-      gap: 5px;
+      gap: 8px;
+      margin-bottom: 15px;
     }
     #noteInput {
       flex-grow: 1;
+      padding: 8px 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+    #noteInput:focus {
+      border-color: #4a90e2;
+      box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    }
+    #searchBtn {
+      padding: 8px 16px;
+      background-color: #4a90e2;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    #searchBtn:hover {
+      background-color: #357abd;
+      transform: translateY(-1px);
+    }
+    #searchBtn:active {
+      transform: translateY(0);
     }
     #results {
       margin-top: 10px;
